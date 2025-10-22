@@ -38,10 +38,63 @@ This tool processes conversation data from CSV files and converts them into a st
 
 4. Set up Google OAuth credentials:
    - Go to [Google Cloud Console](https://console.cloud.google.com/)
-   - Create a new project or select an existing one
-   - Enable Google Sheets API and Google Drive API
-   - Create OAuth 2.0 credentials (Desktop application)
-   - Download the credentials and save as `client_secret.json` in project directory
+   - Create a new project:
+     - Click on the project dropdown at the top of the page
+     - Click "New Project"
+     - Enter a name for your project and click "Create"
+   
+   - Enable required APIs:
+     - Go to "APIs & Services" > "Library"
+     - Search for and enable "Google Sheets API"
+     - Search for and enable "Google Drive API"
+   
+   - Create OAuth 2.0 credentials:
+     - Go to "APIs & Services" > "Credentials"
+     - Click "Create Credentials" > "OAuth client ID"
+     - Return to the credentials page
+     - Select "Desktop Application" as the application type
+     - Give your credentials a name (e.g., "CSV2JSON Converter")
+     - Click "Create"
+   
+   - Download and setup credentials:
+     - Click "Download JSON" for the OAuth client you just created
+     - Save the file as `client_secret.json` in the project directory
+     - The file should look similar to `client_secret_template.json`
+   
+   - First-time authentication:
+     - When you first run the script, it will open a browser window
+     - Log in with the Google account that has access to your Sheets/Drive
+     - Grant the requested permissions when prompted
+     - The script will save a `token.json` file for future authentication
+     - This token will be valid until you revoke access or it expires
+
+## OAuth Consent Screen Configuration
+
+When setting up the OAuth consent screen in Google Cloud Console, follow these guidelines:
+
+1. **User Type**:
+   - Choose "External" unless you have a Google Workspace organization
+   - Note that external applications require verification if used by more than 100 users
+   - For personal use or small teams, you can proceed in "Testing" mode
+
+2. **App Information**:
+   - App name: Choose a descriptive name like "CSV to JSON Converter"
+   - User support email: Your email address
+   - Developer contact information: Your email address
+
+3. **Scopes**:
+   - Add these scopes:
+     - `https://www.googleapis.com/auth/spreadsheets` (See, edit, create, and delete your spreadsheets)
+     - `https://www.googleapis.com/auth/drive.file` (View and manage files created with this app)
+
+4. **Test Users**:
+   - Add your own Google email address as a test user
+   - Add emails for any team members who need access
+   - In testing mode, only authorized test users can access the application
+
+5. **Publishing Status**:
+   - For personal or internal team use, you can keep the app in "Testing" status
+   - Production status with verification is only needed for public distribution
 
 ## Configuration
 
@@ -110,8 +163,32 @@ The output JSON follows this structure:
 
 ## Troubleshooting
 
-- **Authentication issues**: Ensure `client_secret.json` is properly set up
-- **CSV format errors**: Verify CSV files follow the expected format
-- **Google Sheets access**: Check that you have access to the configured spreadsheet
+### Authentication Issues
 
-For detailed logs, check `conversion.log` in the project directory.
+- **Invalid client_secret.json**: 
+  - Verify you downloaded the correct OAuth 2.0 credentials (not API keys or service account keys)
+  - Ensure the file is named exactly `client_secret.json` and is in the project root directory
+  - If you see "The application was not found" errors, return to Google Cloud Console and check that your project and OAuth consent screen are properly configured
+
+- **Token Refresh Errors**:
+  - If you encounter token expiration issues, delete the `token.json` file to force reauthentication
+  - Run `python oauth_setup.py` to generate a new token before running the main script
+  - Ensure you're using the same Google account that has access to your spreadsheet
+
+- **Scope Issues**:
+  - If you receive "insufficient permission" errors, check that you've added the correct scopes in the OAuth consent screen
+  - Required scopes include `/auth/drive.file` and `/auth/spreadsheets`
+
+### CSV and Google Sheets Issues
+
+- **CSV format errors**: 
+  - Verify CSV files follow the expected format with required columns
+  - Check for encoding issues (the tool expects UTF-8 encoding)
+  - If parsing specific rows fails, examine the problematic rows in the CSV file
+
+- **Google Sheets access**: 
+  - Ensure the authenticated Google account has access to the configured spreadsheet
+  - Verify the spreadsheet URL and worksheet name in `config.yaml` are correct
+  - Check that the column names for CSV links and JSON links match your spreadsheet headers
+
+For detailed logs, check `conversion.log` in the project directory. You can increase the logging level in `config.yaml` by changing `level: "INFO"` to `level: "DEBUG"` for more verbose output.
