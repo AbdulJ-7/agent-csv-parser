@@ -68,34 +68,6 @@ This tool processes conversation data from CSV files and converts them into a st
      - The script will save a `token.json` file for future authentication
      - This token will be valid until you revoke access or it expires
 
-## OAuth Consent Screen Configuration
-
-When setting up the OAuth consent screen in Google Cloud Console, follow these guidelines:
-
-1. **User Type**:
-   - Choose "External" unless you have a Google Workspace organization
-   - Note that external applications require verification if used by more than 100 users
-   - For personal use or small teams, you can proceed in "Testing" mode
-
-2. **App Information**:
-   - App name: Choose a descriptive name like "CSV to JSON Converter"
-   - User support email: Your email address
-   - Developer contact information: Your email address
-
-3. **Scopes**:
-   - Add these scopes:
-     - `https://www.googleapis.com/auth/spreadsheets` (See, edit, create, and delete your spreadsheets)
-     - `https://www.googleapis.com/auth/drive.file` (View and manage files created with this app)
-
-4. **Test Users**:
-   - Add your own Google email address as a test user
-   - Add emails for any team members who need access
-   - In testing mode, only authorized test users can access the application
-
-5. **Publishing Status**:
-   - For personal or internal team use, you can keep the app in "Testing" status
-   - Production status with verification is only needed for public distribution
-
 ## Configuration
 
 Edit `config.yaml` to customize:
@@ -133,6 +105,17 @@ Edit `config.yaml` to customize:
    ```bash
    python main.py --status
    ```
+
+4. **Batch Processing and Reprocessing**:
+   - The script can be run multiple times to process new CSVs added to the Google Sheet
+   - By default, previously processed CSVs will be skipped (based on the presence of a JSON link in the sheet)
+   - To reprocess updated CSV files:
+     - If you've edited a CSV file without changing its name, you must:
+       1. Delete the corresponding JSON file(s) from the local `output_jsons` directory
+       2. Delete the corresponding file from the Google Drive folder
+       3. Clear the JSON link cell in the Google Sheet
+     - Otherwise, the tool will skip processing due to the existing links and cached files
+   - You can control this behavior with the `skip_existing` setting in `config.yaml`
 
 ### Direct CSV Conversion
 
@@ -190,5 +173,17 @@ The output JSON follows this structure:
   - Ensure the authenticated Google account has access to the configured spreadsheet
   - Verify the spreadsheet URL and worksheet name in `config.yaml` are correct
   - Check that the column names for CSV links and JSON links match your spreadsheet headers
+
+- **CSVs not being processed**:
+  - If a CSV appears to be skipped, check if it was processed in a previous run
+  - The tool skips files that have existing JSON links in the spreadsheet
+  - For updated CSVs, clear the JSON link cell and remove any existing output files
+
+- **Reprocessing updated CSVs**:
+  - To force reprocessing of an updated CSV:
+    1. Delete the JSON file from local `output_jsons` folder
+    2. Delete the file from Google Drive folder
+    3. Remove the JSON link from the Google Sheet
+    4. Run the script again with `python main.py --process`
 
 For detailed logs, check `conversion.log` in the project directory. You can increase the logging level in `config.yaml` by changing `level: "INFO"` to `level: "DEBUG"` for more verbose output.
