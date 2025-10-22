@@ -1,0 +1,148 @@
+# Configuration file for CSV to JSON Conversation Converter
+
+# Google Sheets Configuration
+google_sheets:
+  # URL of the Google Spreadsheet
+  spreadsheet_url: "https://docs.google.com/spreadsheets/d/1uJ9TS3F8pqlUcbzBcCxCYB4t9uaoJdd8kWr8nH8xNt4/edit?gid=613684105#gid=613684105"
+  #spreadsheet_url: "https://docs.google.com/spreadsheets/d/1P_UP6jTkBsE1oLpmtihj3YlYIfm03cbZfNXsJErhmzE/edit?gid=1360675507#gid=1360675507"
+
+  # Name of the worksheet/subsheet
+  #worksheet_name: "15 Sample set"
+  worksheet_name: "Packed"
+
+  
+  # Column names
+  csv_link_column: "Link to CSV"
+  json_link_column: "Link to JSON"
+  
+  # Google OAuth credentials file path (client_secret.json format)
+  credentials_path: "client_secret.json"
+
+# Google Drive Configuration
+google_drive:
+  # Folder name in Google Drive to upload JSON files
+  #output_folder_name: "marvel_output_jsons"
+  output_folder_name: "packed_jsons"
+
+  
+  # Make uploaded files publicly readable (true/false)
+  make_public: true
+  
+  # Enable/disable Google Drive upload (falls back to local storage if disabled or fails)
+  enable_upload: true
+
+# CSV Processing Configuration
+csv_processing:
+  # Fields to include from CSV (if empty, includes all)
+  included_fields:
+    - "role"
+    - "content"
+    - "timestamp"
+    - "model_used"
+    - "turn_id"
+    - "session_id"
+    - "event_type"
+    - "tool_name"
+    - "original_args"
+    - "execution_result"
+    
+  # Fields to exclude from CSV processing
+  excluded_fields:
+    - "extra"
+    - "modified_args"
+    - "user_action"
+  
+  # Filter criteria for rows
+  filter_criteria:
+    # Only include rows where event_type is in this list (empty list means include all)
+    event_type:
+      - "user_message"
+      - "ai_response"
+      - "llm_input"
+      - "llm_output"
+      - "final_answer"
+      - "tool_call"
+      - "tool_execution"
+      - "thought"
+      - "observation"    # Only include rows where role is in this list (empty list means include all)
+    role:
+      - "user"
+      - "assistant"
+      - "system"
+      - "tool"
+
+# JSON Output Configuration
+json_output:
+  # Structure of the output JSON
+  structure:
+    # Root level fields
+    conversation_id_field: "session_id"  # Field to use as conversation ID
+    messages_field: "messages"           # Field name for messages array
+    
+    # Message structure mapping
+    message_mapping:
+      role: "role"               # CSV field -> JSON field
+      content: "content"         # CSV field -> JSON field  
+      timestamp: "timestamp"     # CSV field -> JSON field
+      model: "model_used"        # CSV field -> JSON field
+      turn_id: "turn_id"        # CSV field -> JSON field
+  
+  # Pretty print JSON output
+  pretty_print: true
+  
+  # Include metadata in JSON (disabled for cleaner format)
+  include_metadata: false
+  metadata_fields:
+    - "total_messages"
+    - "conversation_start"
+    - "conversation_end"
+    - "unique_models"
+
+# File Naming Configuration
+file_naming:
+  # Template for JSON file names (variables: {conversation_id}, {timestamp}, {index})
+  json_filename_template: "{conversation_id}_{timestamp}.json"
+  
+  # Include date in filename
+  include_date: true
+  
+  # Date format for filename
+  date_format: "%Y%m%d"
+
+# Processing Options
+processing:
+  # Process files in batch or one by one
+  batch_processing: true
+  
+  # Maximum number of files to process at once (0 = no limit)
+  max_files_per_batch: 0
+  
+  # Skip files that already exist in drive folder
+  skip_existing: true
+  
+  # Timeout for Google API calls (seconds)
+  api_timeout: 60
+
+# Logging Configuration
+logging:
+  # Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+  level: "INFO"
+  
+  # Log to file
+  log_to_file: true
+  log_file_path: "conversion.log"
+  
+  # Log format
+  format: "%(asctime)s - %(levelname)s - %(message)s"
+
+# Error Handling
+error_handling:
+  # Continue processing other files if one fails
+  continue_on_error: true
+  
+  # Retry failed operations
+  max_retries: 3
+  retry_delay: 5  # seconds
+  
+  # Skip invalid CSV rows
+  skip_invalid_rows: true
