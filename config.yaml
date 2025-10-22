@@ -4,11 +4,12 @@
 google_sheets:
   # URL of the Google Spreadsheet
   spreadsheet_url: "https://docs.google.com/spreadsheets/d/1uJ9TS3F8pqlUcbzBcCxCYB4t9uaoJdd8kWr8nH8xNt4/edit?gid=613684105#gid=613684105"
+  
   #spreadsheet_url: "https://docs.google.com/spreadsheets/d/1P_UP6jTkBsE1oLpmtihj3YlYIfm03cbZfNXsJErhmzE/edit?gid=1360675507#gid=1360675507"
 
   # Name of the worksheet/subsheet
   #worksheet_name: "15 Sample set"
-  worksheet_name: "Packed"
+  worksheet_name: "Form Trajectory"
 
   
   # Column names
@@ -22,7 +23,7 @@ google_sheets:
 google_drive:
   # Folder name in Google Drive to upload JSON files
   #output_folder_name: "marvel_output_jsons"
-  output_folder_name: "packed_jsons"
+  output_folder_name: "form_jsons"
 
   
   # Make uploaded files publicly readable (true/false)
