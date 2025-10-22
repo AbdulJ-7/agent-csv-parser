@@ -14,6 +14,7 @@ This tool processes conversation data from CSV files and converts them into a st
 ## Requirements
 
 - Python 3.8+
+- Git (for cloning the repository)
 - Google account with access to Google Sheets and Drive
 - OAuth 2.0 credentials for Google API access
 
